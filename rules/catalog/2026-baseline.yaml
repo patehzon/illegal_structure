@@ -1,0 +1,22 @@
+version: 2026-baseline
+scope:
+  city: Paris
+  coverage: intramuros
+statuses:
+  - legal_today
+  - illegal_today
+  - unknown_insufficient_data
+  - non_conforming_tolerated
+rules:
+  - code: HEIGHT_MAX_BY_ZONE
+    description: Building height must be below zone-specific maximum.
+    severity: high
+  - code: LAND_USE_COMPATIBILITY
+    description: Declared use must be allowed by active zoning.
+    severity: high
+  - code: HERITAGE_OVERRIDE
+    description: Protected heritage areas may override base zoning permissions.
+    severity: high
+  - code: DATA_MINIMUM_REQUIRED
+    description: Classification is unknown if essential attributes are missing.
+    severity: medium
