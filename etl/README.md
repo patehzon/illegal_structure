@@ -19,3 +19,25 @@ This module will ingest and normalize all datasets needed to classify building l
 5. `validate`: quality checks and anomaly reporting.
 
 Use `etl/scripts/` for executable ingestion modules.
+
+## Runnable MVP skeleton
+
+The current MVP ships a deterministic demo ingestion command that writes staged
+JSON outputs with provenance metadata.
+
+```bash
+python3 etl/scripts/ingest_placeholder.py \
+  --dataset demo_paris_inventory \
+  --output-dir etl/staging \
+  --extraction-date 2026-03-01 \
+  --run-id local-demo
+```
+
+Output layout:
+
+- `etl/staging/<dataset>/<extraction-date>/<run-id>/buildings.jsonl`
+- `etl/staging/<dataset>/<extraction-date>/<run-id>/manifest.json`
+
+Each staged building record includes a `provenance` object with dataset/source
+identity, extraction date, pipeline run id, and source record id so evaluator
+outputs can be traced back to the staging layer.

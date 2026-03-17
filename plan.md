@@ -32,20 +32,19 @@ Out:
 - [x] Implement rule catalog loading and deterministic evaluator rules.
 - [x] Expand backend models/endpoints to use evaluator outputs.
 - [x] Add backend and evaluator tests covering happy path and failure/unknown cases.
-- [ ] Implement ETL CLI skeleton with staged JSON output and provenance fields.
-- [ ] Update methodology/docs to match implemented logic and assumptions.
-- [ ] Run final checks/tests and summarize remaining work.
-- [ ] Create focused commits for each completed increment.
+- [x] Implement ETL CLI skeleton with staged JSON output and provenance fields.
+- [x] Update methodology/docs to match implemented logic and assumptions.
+- [x] Run final checks/tests and summarize remaining work.
+- [x] Create focused commits for each completed increment.
 
 ## Now / Next / Later
 
 Now:
-- Implement ETL CLI skeleton with reproducible staged output.
-- Update methodology/docs to reflect the implemented evaluator assumptions.
+- Handoff current MVP status and remaining gaps clearly.
 
 Next:
-- Evaluate whether the frontend scaffold should consume local API/demo responses in the next increment.
-- Add more rule catalog coverage only after the current assumptions are documented.
+- Connect the frontend scaffold to `/v1/buildings` and `/v1/stats` using demo/local API data.
+- Expand the rules catalog beyond the current zone/use/height MVP assumptions.
 
 Later:
 - Add bbox/map-oriented endpoints and frontend integration.
@@ -68,6 +67,8 @@ Later:
 
 - `2026-03-17` Increment 1: replaced placeholder evaluator logic with catalog-backed zone/use/height checks, added explainability fields (`violations`, `explanations`, `missing_evidence`, `rule_version`, `confidence`), seeded a demo building inventory, and wired `/v1/buildings`, `/v1/buildings/{building_id}`, and `/v1/stats` to live evaluator outputs.
 - `2026-03-17` Increment 1 verification: `make check` passed. `make test` passed with 12 tests covering evaluator behavior, health, list/detail handler wiring, filters, stats aggregation, and not-found handling.
+- `2026-03-17` Increment 2: replaced the ETL print stub with a runnable staging CLI that writes `buildings.jsonl` and `manifest.json` under `etl/staging/<dataset>/<extraction-date>/<run-id>/`, and updated ETL/data/methodology docs to describe provenance and current evaluator assumptions.
+- `2026-03-17` Increment 2 verification: `make check` passed. `make test` passed with 14 tests. `python3 etl/scripts/ingest_placeholder.py --dataset demo_paris_inventory --output-dir /tmp/illegal-structure-stage --extraction-date 2026-03-01 --run-id local-demo` wrote a 5-record staged dataset and manifest successfully.
 
 ## Assumptions
 
@@ -75,3 +76,9 @@ Later:
 - Heritage protection will raise uncertainty rather than produce a hard legality override until rule semantics are formalized in the catalog.
 - Demo backend inventory can be stored in code while ETL and persistence are still scaffold-level.
 - JSON-formatted content inside `rules/catalog/2026-baseline.yaml` is acceptable for the MVP because JSON is valid YAML 1.2 and keeps the catalog parseable with the Python standard library in this environment.
+
+## Remaining Work
+
+- Frontend still renders placeholders and does not yet fetch backend results.
+- `non_conforming_tolerated` semantics remain unresolved and are not emitted by the evaluator.
+- Rule coverage is intentionally narrow: no spatial zoning joins, parcel logic, heritage overrides beyond manual-review fallback, or bbox map endpoints yet.
