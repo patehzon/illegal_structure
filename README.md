@@ -22,6 +22,9 @@ This repository scaffolds a full-stack geospatial system to:
 cp .env.example .env
 make bootstrap
 make check
+make test
+make run-backend
+make run-frontend
 ```
 
 ## What is implemented now

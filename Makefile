@@ -1,16 +1,21 @@
 .PHONY: bootstrap check test run-backend run-frontend
 
+PYTHON := $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
+
 bootstrap:
-	@echo "Scaffold bootstrap complete. Install backend/frontend dependencies as needed."
+	python3 -m venv .venv
+	.venv/bin/python -m pip install --upgrade pip
+	.venv/bin/python -m pip install -r backend/requirements.txt
+	cd frontend && npm install
 
 check:
-	python3 -m compileall backend rules etl
+	$(PYTHON) -m compileall backend rules etl
 
 test:
-	python3 -m unittest discover -s backend/tests -p 'test_*.py'
+	$(PYTHON) -m unittest discover -s backend/tests -p 'test_*.py'
 
 run-backend:
-	uvicorn backend.app.main:app --host 0.0.0.0 --port $${BACKEND_PORT:-8000} --reload
+	$(PYTHON) -m uvicorn backend.app.main:app --host 0.0.0.0 --port $${BACKEND_PORT:-8000} --reload
 
 run-frontend:
 	cd frontend && npm run dev -- --host 0.0.0.0 --port $${FRONTEND_PORT:-5173}

@@ -4,15 +4,19 @@ from backend.app.compat import HTTPException
 from backend.app.main import get_building, get_stats, list_buildings
 
 
+def _status_value(value: object) -> str:
+    return getattr(value, "value", str(value))
+
+
 class ApiTest(unittest.TestCase):
     def test_list_buildings_returns_evaluated_summaries(self) -> None:
         payload = list_buildings()
 
         self.assertEqual(len(payload), 5)
         self.assertEqual(payload[0].building_id, "PARIS-DEMO-0001")
-        self.assertEqual(str(payload[0].status), "legal_today")
+        self.assertEqual(_status_value(payload[0].status), "legal_today")
         self.assertGreater(payload[0].confidence, 0.9)
-        self.assertEqual(str(payload[1].status), "illegal_today")
+        self.assertEqual(_status_value(payload[1].status), "illegal_today")
 
     def test_list_buildings_supports_arrondissement_filter(self) -> None:
         payload = list_buildings(min_arr=17, max_arr=20)
@@ -22,7 +26,7 @@ class ApiTest(unittest.TestCase):
     def test_get_building_returns_explainable_evaluation(self) -> None:
         payload = get_building("PARIS-DEMO-0002")
 
-        self.assertEqual(str(payload.status), "illegal_today")
+        self.assertEqual(_status_value(payload.status), "illegal_today")
         self.assertEqual(payload.rule_version, "2026-baseline")
         self.assertGreaterEqual(len(payload.violations), 1)
         self.assertGreaterEqual(len(payload.explanations), 3)

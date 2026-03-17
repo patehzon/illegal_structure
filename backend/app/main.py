@@ -30,6 +30,10 @@ def _in_arrondissement_range(building: dict[str, object], min_arr: int, max_arr:
     return min_arr <= arrondissement <= max_arr
 
 
+def _normalize_int_query_value(value: object) -> int:
+    return int(getattr(value, "default", value))
+
+
 def _build_summary(building: dict[str, object]) -> BuildingSummary:
     evaluation = evaluate_building(building)
     return BuildingSummary(
@@ -77,6 +81,8 @@ def list_buildings(
     min_arr: int = Query(default=1, ge=1, le=20),
     max_arr: int = Query(default=20, ge=1, le=20),
 ) -> list[BuildingSummary]:
+    min_arr = _normalize_int_query_value(min_arr)
+    max_arr = _normalize_int_query_value(max_arr)
     return [
         _build_summary(building)
         for building in list_demo_buildings()
@@ -97,6 +103,8 @@ def get_stats(
     min_arr: int = Query(default=1, ge=1, le=20),
     max_arr: int = Query(default=20, ge=1, le=20),
 ) -> StatsResponse:
+    min_arr = _normalize_int_query_value(min_arr)
+    max_arr = _normalize_int_query_value(max_arr)
     summaries = [
         _build_summary(building)
         for building in list_demo_buildings()

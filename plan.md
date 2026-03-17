@@ -41,11 +41,14 @@ Out:
 - [x] Update `README.md` checklist items to reflect completed roadmap work without overstating scope.
 - [x] Verify backend tests and frontend build/dev ergonomics after the UI increment.
 - [x] Commit the frontend increment.
+- [x] Reproduce and fix backend runtime/bootstrap failures on the real server path.
+- [x] Verify the live backend over HTTP after provisioning the project runtime.
+- [x] Commit the backend runtime fix.
 
 ## Now / Next / Later
 
 Now:
-- Commit the verified frontend/API integration increment and hand off the new run path.
+- Commit the verified backend runtime fix and hand off the corrected run path.
 
 Next:
 - Expand the rules catalog beyond the current zone/use/height MVP assumptions.
@@ -76,6 +79,8 @@ Later:
 - `2026-03-17` Increment 2 verification: `make check` passed. `make test` passed with 14 tests. `python3 etl/scripts/ingest_placeholder.py --dataset demo_paris_inventory --output-dir /tmp/illegal-structure-stage --extraction-date 2026-03-01 --run-id local-demo` wrote a 5-record staged dataset and manifest successfully.
 - `2026-03-17` Increment 3: replaced the placeholder frontend with a filterable legality dashboard that loads `/v1/buildings` and `/v1/stats`, fetches building detail traces, supports local fallback demo data, and added local dev proxy/CORS support plus README roadmap checkmark updates.
 - `2026-03-17` Increment 3 verification: `make check` passed. `make test` passed with 14 tests. `npm install` completed successfully in `frontend/`. `npm run build` succeeded and produced a Vite production bundle in `frontend/dist/`.
+- `2026-03-17` Increment 4: fixed the backend runtime path by turning `make bootstrap` into a real environment provisioner, routing `make check`, `make test`, and `make run-backend` through the project `.venv`, and upgrading backend pins to Python 3.14-compatible FastAPI/Pydantic/Uvicorn versions.
+- `2026-03-17` Increment 4 verification: `make bootstrap` passed. `make check` passed. `make test` passed with 14 tests under `.venv`. Live HTTP probes against `127.0.0.1:8001` returned expected JSON for `/health`, `/v1/buildings`, `/v1/stats`, and `/v1/buildings/PARIS-DEMO-0002`.
 
 ## Assumptions
 
