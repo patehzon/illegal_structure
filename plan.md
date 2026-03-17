@@ -53,7 +53,7 @@ Later:
 
 ## Risks & Open Questions
 
-- The current YAML catalog only lists rule metadata, not executable thresholds; MVP will need documented assumptions for zone/use constraints.
+- The current catalog thresholds and allowed-use mappings are MVP assumptions, not yet validated against the full 2026 Paris legal corpus.
 - There is no canonical building dataset yet, so backend responses will rely on seeded in-memory demo records for now.
 - `non_conforming_tolerated` semantics are unresolved in `README.md`; MVP should avoid inferring that status without explicit evidence.
 - The user requested work in `/workspace/illegal_structure`, but this environment only contains `/home/lassouli/illegal_structure`. Work is proceeding in the available repo.
