@@ -1,6 +1,14 @@
-from fastapi import FastAPI, Query
+from rules.engine.evaluator import evaluate_building
 
-from .models import BuildingEvaluation, BuildingSummary, LegalityStatus, ViolationDetail
+from .compat import FastAPI, HTTPException, Query
+from .data import get_demo_building, list_demo_buildings
+from .models import (
+    BuildingEvaluation,
+    BuildingSummary,
+    ExplanationDetail,
+    StatsResponse,
+    ViolationDetail,
+)
 
 app = FastAPI(title="Illegal Structure API", version="0.1.0")
 
@@ -10,45 +18,90 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
+def _in_arrondissement_range(building: dict[str, object], min_arr: int, max_arr: int) -> bool:
+    arrondissement = int(building["arrondissement"])
+    return min_arr <= arrondissement <= max_arr
+
+
+def _build_summary(building: dict[str, object]) -> BuildingSummary:
+    evaluation = evaluate_building(building)
+    return BuildingSummary(
+        building_id=str(building["building_id"]),
+        address=str(building["address"]),
+        arrondissement=int(building["arrondissement"]),
+        status=evaluation.status,
+        confidence=evaluation.confidence,
+        rule_version=evaluation.rule_version,
+    )
+
+
+def _build_evaluation(building: dict[str, object]) -> BuildingEvaluation:
+    evaluation = evaluate_building(building)
+    return BuildingEvaluation(
+        building_id=str(building["building_id"]),
+        address=str(building["address"]),
+        arrondissement=int(building["arrondissement"]),
+        status=evaluation.status,
+        confidence=evaluation.confidence,
+        violations=[
+            ViolationDetail(
+                rule_code=violation.rule_code,
+                severity=violation.severity,
+                message=violation.message,
+            )
+            for violation in evaluation.violations
+        ],
+        explanations=[
+            ExplanationDetail(
+                rule_code=explanation.rule_code,
+                outcome=explanation.outcome,
+                message=explanation.message,
+            )
+            for explanation in evaluation.explanations
+        ],
+        missing_evidence=evaluation.missing_evidence,
+        rule_version=evaluation.rule_version,
+        notes=evaluation.notes,
+    )
+
+
 @app.get("/v1/buildings", response_model=list[BuildingSummary])
 def list_buildings(
     min_arr: int = Query(default=1, ge=1, le=20),
     max_arr: int = Query(default=20, ge=1, le=20),
 ) -> list[BuildingSummary]:
-    demo_data = [
-        BuildingSummary(
-            building_id="PARIS-DEMO-0001",
-            address="10 Rue de Rivoli",
-            arrondissement=1,
-            status=LegalityStatus.unknown_insufficient_data,
-        )
+    return [
+        _build_summary(building)
+        for building in list_demo_buildings()
+        if _in_arrondissement_range(building, min_arr, max_arr)
     ]
-    return [b for b in demo_data if min_arr <= b.arrondissement <= max_arr]
 
 
 @app.get("/v1/buildings/{building_id}", response_model=BuildingEvaluation)
 def get_building(building_id: str) -> BuildingEvaluation:
-    return BuildingEvaluation(
-        building_id=building_id,
-        status=LegalityStatus.unknown_insufficient_data,
-        confidence=0.25,
-        violations=[
-            ViolationDetail(
-                rule_code="DATA_MISSING_HEIGHT",
-                message="Height information is missing; cannot fully evaluate envelope compliance.",
-            )
-        ],
-        rule_version="2026-baseline",
-        notes="Scaffold response. Replace with real rule-engine output.",
-    )
+    building = get_demo_building(building_id)
+    if building is None:
+        raise HTTPException(status_code=404, detail=f"Unknown building_id '{building_id}'")
+    return _build_evaluation(building)
 
 
-@app.get("/v1/stats")
-def get_stats() -> dict[str, int]:
-    return {
-        "total_buildings": 1,
+@app.get("/v1/stats", response_model=StatsResponse)
+def get_stats(
+    min_arr: int = Query(default=1, ge=1, le=20),
+    max_arr: int = Query(default=20, ge=1, le=20),
+) -> StatsResponse:
+    summaries = [
+        _build_summary(building)
+        for building in list_demo_buildings()
+        if _in_arrondissement_range(building, min_arr, max_arr)
+    ]
+    counts = {
+        "total_buildings": len(summaries),
         "legal_today": 0,
         "illegal_today": 0,
-        "unknown_insufficient_data": 1,
+        "unknown_insufficient_data": 0,
         "non_conforming_tolerated": 0,
     }
+    for summary in summaries:
+        counts[summary.status] += 1
+    return StatsResponse(**counts)
