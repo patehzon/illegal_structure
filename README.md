@@ -27,18 +27,18 @@ make check
 ## What is implemented now
 
 - Base directory scaffold and coding entry points.
-- Minimal FastAPI app + health endpoint + planned API routes.
-- Rule schema and baseline rule catalog (`2026-baseline.yaml`).
-- ETL skeleton with dataset registry placeholders.
-- Frontend React scaffold with placeholder map/dashboard panels.
-- Methodology and a complete implementation checklist.
+- Backend API with health, building list/detail, and stats endpoints backed by the evaluator.
+- Rule catalog and evaluator for MVP zone/use/height checks with explainability fields.
+- Runnable ETL staging skeleton with provenance-rich manifest and JSONL outputs.
+- Frontend React dashboard wired to current API/demo responses with filters and detail views.
+- Methodology, provenance, and implementation tracking docs kept in-repo.
 
 ## Roadmap checklist (execution backlog)
 
 ### Phase 0 — Governance and definitions
 
 - [ ] Freeze legal semantics for `illegal_today` vs `non_conforming_tolerated`.
-- [ ] Define confidence levels and uncertainty handling.
+- [x] Define confidence levels and uncertainty handling.
 - [ ] Approve disclaimer text for public-facing map/dashboard.
 
 ### Phase 1 — Data acquisition and canonical model
@@ -52,22 +52,22 @@ make check
 
 - [ ] Encode PLU zoning constraints by spatial zone.
 - [ ] Encode height/FAR/envelope constraints.
-- [ ] Encode usage constraints and prohibited uses by zone.
+- [x] Encode usage constraints and prohibited uses by zone.
 - [ ] Encode heritage/protected perimeter overrides.
 - [ ] Encode optional rule packs (accessibility/energy/fire).
 
 ### Phase 3 — Evaluation engine
 
-- [ ] Implement per-building rule evaluation with explainable trace.
-- [ ] Add confidence scoring and missing evidence reporting.
+- [x] Implement per-building rule evaluation with explainable trace.
+- [x] Add confidence scoring and missing evidence reporting.
 - [ ] Store result snapshots with `rule_version` and timestamp.
 
 ### Phase 4 — API and map/dashboard UX
 
 - [ ] Build viewport/bbox query endpoint for map rendering.
-- [ ] Build building detail endpoint with violation explanations.
+- [x] Build building detail endpoint with violation explanations.
 - [ ] Build stats endpoints by arrondissement/rule category.
-- [ ] Implement frontend layers and filters.
+- [x] Implement frontend layers and filters.
 
 ### Phase 5 — Quality, reproducibility, and ops
 
@@ -84,4 +84,3 @@ make check
   - `unknown_insufficient_data`
   - `non_conforming_tolerated` (if policy requires)
 - Every decision must be explainable with machine- and human-readable rationale.
-

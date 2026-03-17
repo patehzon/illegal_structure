@@ -1,6 +1,6 @@
 from rules.engine.evaluator import evaluate_building
 
-from .compat import FastAPI, HTTPException, Query
+from .compat import CORSMiddleware, FastAPI, HTTPException, Query
 from .data import get_demo_building, list_demo_buildings
 from .models import (
     BuildingEvaluation,
@@ -11,6 +11,13 @@ from .models import (
 )
 
 app = FastAPI(title="Illegal Structure API", version="0.1.0")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/health")

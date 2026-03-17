@@ -36,15 +36,20 @@ Out:
 - [x] Update methodology/docs to match implemented logic and assumptions.
 - [x] Run final checks/tests and summarize remaining work.
 - [x] Create focused commits for each completed increment.
+- [x] Implement frontend data loading, status rendering, and filters against the current demo API.
+- [x] Add the minimum backend browser support needed for local frontend-to-API requests.
+- [x] Update `README.md` checklist items to reflect completed roadmap work without overstating scope.
+- [x] Verify backend tests and frontend build/dev ergonomics after the UI increment.
+- [x] Commit the frontend increment.
 
 ## Now / Next / Later
 
 Now:
-- Handoff current MVP status and remaining gaps clearly.
+- Commit the verified frontend/API integration increment and hand off the new run path.
 
 Next:
-- Connect the frontend scaffold to `/v1/buildings` and `/v1/stats` using demo/local API data.
 - Expand the rules catalog beyond the current zone/use/height MVP assumptions.
+- Add bbox/map-oriented APIs and geometry-backed map rendering.
 
 Later:
 - Add bbox/map-oriented endpoints and frontend integration.
@@ -69,6 +74,8 @@ Later:
 - `2026-03-17` Increment 1 verification: `make check` passed. `make test` passed with 12 tests covering evaluator behavior, health, list/detail handler wiring, filters, stats aggregation, and not-found handling.
 - `2026-03-17` Increment 2: replaced the ETL print stub with a runnable staging CLI that writes `buildings.jsonl` and `manifest.json` under `etl/staging/<dataset>/<extraction-date>/<run-id>/`, and updated ETL/data/methodology docs to describe provenance and current evaluator assumptions.
 - `2026-03-17` Increment 2 verification: `make check` passed. `make test` passed with 14 tests. `python3 etl/scripts/ingest_placeholder.py --dataset demo_paris_inventory --output-dir /tmp/illegal-structure-stage --extraction-date 2026-03-01 --run-id local-demo` wrote a 5-record staged dataset and manifest successfully.
+- `2026-03-17` Increment 3: replaced the placeholder frontend with a filterable legality dashboard that loads `/v1/buildings` and `/v1/stats`, fetches building detail traces, supports local fallback demo data, and added local dev proxy/CORS support plus README roadmap checkmark updates.
+- `2026-03-17` Increment 3 verification: `make check` passed. `make test` passed with 14 tests. `npm install` completed successfully in `frontend/`. `npm run build` succeeded and produced a Vite production bundle in `frontend/dist/`.
 
 ## Assumptions
 
@@ -79,6 +86,6 @@ Later:
 
 ## Remaining Work
 
-- Frontend still renders placeholders and does not yet fetch backend results.
 - `non_conforming_tolerated` semantics remain unresolved and are not emitted by the evaluator.
 - Rule coverage is intentionally narrow: no spatial zoning joins, parcel logic, heritage overrides beyond manual-review fallback, or bbox map endpoints yet.
+- The frontend is inventory/detail oriented for now; it does not yet render real building geometries or viewport-driven map queries.

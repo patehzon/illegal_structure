@@ -19,6 +19,7 @@ except ModuleNotFoundError:
             self.args = args
             self.kwargs = kwargs
             self.routes: list[tuple[str, str, Any, Any]] = []
+            self.middleware: list[tuple[Any, dict[str, Any]]] = []
 
         def get(self, path: str, response_model: Any = None) -> Any:
             def decorator(func: Any) -> Any:
@@ -27,8 +28,17 @@ except ModuleNotFoundError:
 
             return decorator
 
+        def add_middleware(self, middleware_class: Any, **kwargs: Any) -> None:
+            self.middleware.append((middleware_class, kwargs))
+
     def Query(default: Any = None, **_: Any) -> Any:
         return default
+
+try:
+    from fastapi.middleware.cors import CORSMiddleware
+except ModuleNotFoundError:
+    class CORSMiddleware:
+        pass
 
 try:
     from pydantic import BaseModel, Field
